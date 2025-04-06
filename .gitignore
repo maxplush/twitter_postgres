@@ -3,3 +3,5 @@ results/*
 
 *.swo
 *.swp
+/venv/
+
