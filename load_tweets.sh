@@ -16,3 +16,5 @@ echo 'load denormalized'
 for file in $files; do
     # use SQL's COPY command to load data into pg_denormalized
 done
+
+
