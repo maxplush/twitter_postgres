@@ -101,8 +101,12 @@ def insert_tweet(connection,tweet):
     if res.first() is not None:
         return
 
+    if connection.in_transaction():
+        connection.commit()
+
     # insert tweet within a transaction;
     # this ensures that a tweet does not get "partially" loaded
+    # close connection first (need to add)
     with connection.begin() as trans:
 
         ########################################
@@ -115,6 +119,7 @@ def insert_tweet(connection,tweet):
 
         # create/update the user
         sql = sqlalchemy.sql.text('''
+
             ''')
 
         ########################################
