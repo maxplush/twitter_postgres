@@ -419,9 +419,25 @@ def insert_tweet(connection,tweet):
 
         tags = [ '#'+hashtag['text'] for hashtag in hashtags ] + [ '$'+cashtag['text'] for cashtag in cashtags ]
 
+       # for tag in tags:
+        #    sql=sqlalchemy.sql.text('''
+         #       ''')
         for tag in tags:
-            sql=sqlalchemy.sql.text('''
-                ''')
+            sql = sqlalchemy.sql.text('''
+            INSERT INTO tweet_tags (
+                id_tweets,
+                tag
+            ) VALUES (
+                :id_tweets,
+                :tag
+            )
+            ON CONFLICT DO NOTHING
+            ''')
+
+            connection.execute(sql, {
+                'id_tweets': tweet['id'],
+                'tag': remove_nulls(tag)  # clean it up just in case
+            })
 
         ########################################
         # insert into the tweet_media table
