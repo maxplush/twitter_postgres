@@ -328,8 +328,23 @@ def insert_tweet(connection,tweet):
         for url in urls:
             id_urls = get_id_urls(url['expanded_url'], connection)
 
-            sql=sqlalchemy.sql.text('''
-                ''')
+            #sql=sqlalchemy.sql.text('''
+             #   ''')
+            sql = sqlalchemy.sql.text('''
+            INSERT INTO tweet_urls (
+                id_tweets,
+                id_urls
+            ) VALUES (
+                :id_tweets,
+                :id_urls
+            )
+            ON CONFLICT DO NOTHING
+            ''')
+
+            connection.execute(sql, {
+                'id_tweets': tweet['id'],
+                'id_urls': id_urls
+            })
 
         ########################################
         # insert into the tweet_mentions table
