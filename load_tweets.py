@@ -355,7 +355,7 @@ def insert_tweet(connection,tweet):
         except KeyError:
             mentions = tweet['entities']['user_mentions']
 
-        for mention in mentions:
+       # for mention in mentions:
             # insert into users table;
             # note that we already have done an insert into the users table above for the user who sent a tweet;
             # that insert had lots of information inside of it (i.e. the user row was "hydrated");
@@ -363,13 +363,49 @@ def insert_tweet(connection,tweet):
             # therefore, we must store the user info "unhydrated"
             # HINT:
             # use the ON CONFLICT DO NOTHING syntax
-            sql=sqlalchemy.sql.text('''
-                ''')
+        #    sql=sqlalchemy.sql.text('''
+         #       ''')
 
             # insert into tweet_mentions
-            sql=sqlalchemy.sql.text('''
-                ''')
+          #  sql=sqlalchemy.sql.text('''
+           #     ''')
+        for mention in mentions:
+            # Insert unhydrated user if they don't already exist
+            sql = sqlalchemy.sql.text('''
+            INSERT INTO users (
+                id_users,
+                screen_name,
+                name
+            ) VALUES (
+                :id_users,
+                :screen_name,
+                :name
+            )
+            ON CONFLICT DO NOTHING
+            ''')
 
+            connection.execute(sql, {
+                'id_users': mention['id'],
+                'screen_name': remove_nulls(mention.get('screen_name')),
+                'name': None  # We only have screen_name from a mention
+            })
+
+            # Insert into tweet_mentions
+            sql = sqlalchemy.sql.text('''
+            INSERT INTO tweet_mentions (
+                id_tweets,
+                id_users
+            ) VALUES (
+                :id_tweets,
+                :id_users
+            )
+            ON CONFLICT DO NOTHING
+            ''')
+
+            connection.execute(sql, {
+                'id_tweets': tweet['id'],
+                'id_users': mention['id']
+            })
         ########################################
         # insert into the tweet_tags table
         ########################################
