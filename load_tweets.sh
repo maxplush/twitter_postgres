@@ -12,7 +12,14 @@ for file in $files; do
 	python3 load_tweets.py --db=postgresql://postgres:pass@localhost:1629/postgres --inputs="$file"
 done
 
+#echo 'load denormalized'
+#for file in $files; do
+    # use SQL's COPY command to load data into pg_denormalized
+#done
+
 echo 'load denormalized'
 for file in $files; do
-    # use SQL's COPY command to load data into pg_denormalized
+    unzip -p "$file" | sed 's/\\u0000//g' | \
+    psql postgresql://postgres:pass@localhost:1569/postgres -c \
+    "COPY tweets_jsonb (data) FROM STDIN csv quote e'\x01' delimiter e'\x02';"
 done
